@@ -68,15 +68,15 @@ int main()
             continue;
         }        
 
-        // Tiến trình con nếu là pipeline
+        // Nếu là pipeline
         int pipe_use = 0;
         int pipe_index;
-        for (int j = 0; j < index; j++) {
+        for (int temp = 0; temp < index; temp++) {
             // Dấu hiệu pipeline
-            if (strcmp(args[j], "|") == 0) {
-                args[j] = NULL; // Đánh dấu vị trí pipeline là NULL
+            if (strcmp(args[temp], "|") == 0) {
+                args[temp] = NULL; // Đánh dấu vị trí pipeline là NULL
                 pipe_use = 1; // Cờ pipeline
-                pipe_index = j;
+                pipe_index = temp;
                 break;
             }
         }
@@ -95,6 +95,7 @@ int main()
                     printf("Command does not exist.\n");
                     exit(EXIT_FAILURE);
                 }
+                exit(0);
             }
             cpid = fork();
             if (cpid == 0) {
@@ -104,11 +105,13 @@ int main()
                     printf("Command does not exist.\n");
                     exit(EXIT_FAILURE);
                 }
+                exit(0);
             }
             close (pipefd[0]);
             close (pipefd[1]);
             waitpid(-1, &status, 0);
             waitpid(-1, &status, 0);
+            continue;
         }
 
 
@@ -118,10 +121,10 @@ int main()
             // Nếu lệnh là "HF"
             if (strcmp(command, "HF") == 0) {
                 // In ra 5 lệnh gần nhất
-                for (int i = 0; i < historyCount; i++) {
-                    printf("%s\n", HF[i]);
-                    exit(0);
+                for (int tempHF = 0; tempHF < historyCount; tempHF++) {
+                    printf("%s\n", HF[tempHF]);
                 }
+                exit(0);
             }
 
             // Nếu lệnh là chuyển hướng đầu vào ra
