@@ -67,7 +67,51 @@ int main()
             should_run = 0; // Dừng chương trình
             continue;
         }        
-   
+
+        // Tiến trình con nếu là pipeline
+        int pipe_use = 0;
+        int pipe_index;
+        for (int j = 0; j < index; j++) {
+            // Dấu hiệu pipeline
+            if (strcmp(args[j], "|") == 0) {
+                args[j] = NULL; // Đánh dấu vị trí pipeline là NULL
+                pipe_use = 1; // Cờ pipeline
+                pipe_index = j;
+                break;
+            }
+        }
+        if (pipe_use == 1) {
+            int pipefd[2], status, done = 0;
+            if (pipe(pipefd) == -1) {
+                // Xử lý lỗi khi không thể tạo đường ống
+                perror("Pipe fail. Try again");
+            }
+            pid_t cpid; 
+            cpid = fork();
+            if (cpid == 0) {
+                close(pipefd[0]);
+                dup2(pipefd[1], STDOUT_FILENO);
+                if (execvp(args[0], args) == -1 && strcmp(args[0],"HF") != 0) {
+                    printf("Command does not exist.\n");
+                    exit(EXIT_FAILURE);
+                }
+            }
+            cpid = fork();
+            if (cpid == 0) {
+                close(pipefd[1]);
+                dup2(pipefd[0],STDIN_FILENO);
+                if (execvp(args[pipe_index + 1], &args[pipe_index + 1]) == -1 && strcmp(args[0],"HF") != 0) {
+                    printf("Command does not exist.\n");
+                    exit(EXIT_FAILURE);
+                }
+            }
+            close (pipefd[0]);
+            close (pipefd[1]);
+            waitpid(-1, &status, 0);
+            waitpid(-1, &status, 0);
+        }
+
+
         // Tiến trình con
         pid_t pid = fork();
         if (pid == 0) {
@@ -123,10 +167,6 @@ int main()
                     close(input_fd);
                 }
             }
-            
-            // Thực thi lệnh
-            if (redirect_input == 0 && redirect_output == 0)
-                execvp(args[0], args);
 
             // Kiểm tra lỗi
             if (execvp(args[0], args) == -1 && strcmp(args[0],"HF") != 0) {
@@ -143,4 +183,3 @@ int main()
     }
     return 0;
 }
-//test thử
