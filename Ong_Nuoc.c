@@ -95,6 +95,7 @@ int main()
             if (pipe(pipefd) == -1) {
                 // Xử lý lỗi khi không thể tạo đường ống
                 perror("Pipe fail. Try again");
+                continue;
             }
             pid_t cpid; 
             cpid = fork();
