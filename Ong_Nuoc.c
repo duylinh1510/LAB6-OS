@@ -5,17 +5,27 @@
 #include <sys/time.h>
 #include <string.h>
 #include <fcntl.h>
+#include <signal.h>
 #define HISTORY_SIZE 5 
 #define MAX_LINE 80
+
+void sigintHandler(int signum) {
+    if (signum == SIGINT) {
+        printf("\nCtrl + C pressed, quitting shell program...");
+        exit(EXIT_SUCCESS);
+    }
+}
 
 int main()
 {
     int history = 0;
     char* HF[HISTORY_SIZE];
     int historyCount = 0;
-
     char *args[MAX_LINE / 2 + 1]; // Mảng để lưu trữ lệnh và các tham số của lệnh
     int should_run = 1;           // Biến cờ để xác định chương trình có tiếp tục chạy hay không
+
+    // Thêm listener để bắt tín hiệu lúc người dùng bấm Ctrl + C
+    signal(SIGINT, sigintHandler);
 
     // Cấp phát bộ nhớ
     for (int i = 0; i < MAX_LINE / 2 + 1; i++) {
@@ -172,7 +182,7 @@ int main()
             }
 
             // Kiểm tra lỗi
-            if (execvp(args[0], args) == -1 && strcmp(args[0],"HF") != 0) {
+            if (execvp(args[0], args) == -1 & strcmp(args[0],"HF") != 0) {
                 printf("Command does not exist.\n");
                 exit(EXIT_FAILURE);
             }
