@@ -21,7 +21,7 @@ int main()
     int history = 0;
     char* HF[HISTORY_SIZE];
     int historyCount = 0;
-    char *args[MAX_LINE / 2 + 1]; // Mảng để lưu trữ lệnh và các tham số của lệnh
+    char *args[MAX_LINE / 2 + 1]; // Mảng để lưu ữ lệnh và các tham số của lệnh
     int should_run = 1;           // Biến cờ để xác định chương trình có tiếp tục chạy hay không
 
     // Thêm listener để bắt tín hiệu lúc người dùng bấm Ctrl + C
@@ -101,7 +101,7 @@ int main()
             if (cpid == 0) {
                 close(pipefd[0]);
                 dup2(pipefd[1], STDOUT_FILENO);
-                if (execvp(args[0], args) == -1 && strcmp(args[0],"HF") != 0) {
+                if (execvp(args[0], args) == -1) {
                     printf("Command does not exist.\n");
                     exit(EXIT_FAILURE);
                 }
@@ -111,7 +111,7 @@ int main()
             if (cpid == 0) {
                 close(pipefd[1]);
                 dup2(pipefd[0],STDIN_FILENO);
-                if (execvp(args[pipe_index + 1], &args[pipe_index + 1]) == -1 && strcmp(args[0],"HF") != 0) {
+                if (execvp(args[pipe_index + 1], &args[pipe_index + 1])) {
                     printf("Command does not exist.\n");
                     exit(EXIT_FAILURE);
                 }
@@ -182,7 +182,7 @@ int main()
             }
 
             // Kiểm tra lỗi
-            if (execvp(args[0], args) == -1 & strcmp(args[0],"HF") != 0) {
+            if (execvp(args[0], args) == -1) {
                 printf("Command does not exist.\n");
                 exit(EXIT_FAILURE);
             }
