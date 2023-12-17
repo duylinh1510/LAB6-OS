@@ -125,8 +125,11 @@ int main()
         fgets(command, MAX_LINE, stdin);        // Nhập câu lệnh
         command[strcspn(command, "\n")] = '\0'; // strcspn tìm vị trí đầu tiên có '\n' trong chuỗi; '\0' kết thúc chuỗi tại đó. // Loại bỏ ký tự xuống dòng ('\n') ở cuối chuỗi nhập vào
 
+        // Bỏ qua nếu câu lệnh rỗng
+        if (strlen(command) == 0)
+            continue;
         // Kiểm tra lệnh đặc biệt của người dùng nhập vào như "exit"
-        if (strcmp(command, "exit") == 0)
+        else if (strcmp(command, "exit") == 0)
         {
             should_run = 0;
             continue;
@@ -245,7 +248,7 @@ int main()
         // Tiến trình cha
         else
         {
-            waitpid(-1, NULL, 0);           // Chờ tiến trình con thực thi xong
+            waitpid(-1, NULL, 0); // Chờ tiến trình con thực thi xong
         }
     }
 
