@@ -24,8 +24,8 @@ void sigint_handler()
 {
     if (pid != 0 && childRunning == 1)
         kill(pid, SIGKILL);
-    // else
-    //     return;
+    else
+        return;
 }
 
 void exec_cmd(char *command)
@@ -112,6 +112,8 @@ int main()
     {
         args[i] = malloc(MAX_LINE);
     }
+
+    signal(SIGINT, sigint_handler); // Listener để xử lý khi khi người dùng nhấn Ctrl + C
 
     int should_run = 1; // Biến cờ để xác định chương trình có tiếp tục chạy hay không
     while (should_run)
@@ -243,7 +245,6 @@ int main()
         // Tiến trình cha
         else
         {
-            signal(SIGINT, sigint_handler); // Listener để xử lý khi khi người dùng nhấn Ctrl + C
             waitpid(-1, NULL, 0);           // Chờ tiến trình con thực thi xong
         }
     }
@@ -253,6 +254,6 @@ int main()
         free(HF[i]);
     for (int i = 0; i < argsCount; i++)
         free(args[i]);
-    printf("Thanks for using, goodbye!");
+    printf("Goodbye!");
     return 0;
 }
