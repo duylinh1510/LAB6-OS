@@ -24,7 +24,8 @@ void sigint_handler()
 {
     if (pid == 0)
     {
-        printf("Ctrl + C pressed, quitting program...\n"); // Nếu là tiến trình con, in ra dòng chữ này
+        // Nếu là tiến trình con, in ra dòng chữ này
+        printf("Ctrl + C pressed, quitting program...\n");
     }
 }
 
@@ -103,6 +104,9 @@ void exec_cmd(char *command)
 
 int main()
 {
+    // Listener để xử lý khi người dùng nhấn Ctrl + C
+    signal(SIGINT, sigint_handler); 
+
     // Cấp phát bộ nhớ
     for (int i = 0; i < HISTORY_SIZE; i++)
     {
@@ -113,7 +117,6 @@ int main()
         args[i] = malloc(MAX_LINE);
     }
 
-    signal(SIGINT, sigint_handler); // Listener để xử lý khi khi người dùng nhấn Ctrl + C
 
     int should_run = 1; // Biến cờ để xác định chương trình có tiếp tục chạy hay không
     while (should_run)
@@ -222,8 +225,6 @@ int main()
                     if (i < cmd_count - 1)
                         dup2(pipefd[1], STDOUT_FILENO); // Chuyển hướng đầu ra của tất cả cmd trừ cmd cuối
                     exec_cmd(cmd_list[i]);
-                    close(pipefd[1]);
-                    exit(EXIT_SUCCESS); // Tiến trình con hi sinh sau khi chạy xong cmd
                 }
                 // Tiến trình cha
                 else
