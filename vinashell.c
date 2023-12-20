@@ -9,7 +9,7 @@
 #include <string.h>
 
 #define HISTORY_SIZE 5
-#define MAX_LINE 80
+#define MAX_LINE 80 // Số ký tự tối đa trên 1 dòng
 #define MAX_COMMAND 4 // Số command tối đa được sử dụng trong pipe, ví dụ: 'ls | grep a | wc -l' là 3 command
 
 char *HF[HISTORY_SIZE];       // Mảng để lưu lịch sử các câu lệnh
