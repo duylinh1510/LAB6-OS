@@ -11,20 +11,20 @@
 #define HISTORY_SIZE 5
 #define MAX_LINE 80 // Số ký tự tối đa trên 1 dòng
 #define MAX_COMMAND 4 // Số command tối đa được sử dụng trong pipe, ví dụ: 'ls | grep a | wc -l' là 3 command
+#define DEFAULT_PID 1 // id mặc định để gán cho process chính khi hàm fork() chưa được gọi
 
 char *HF[HISTORY_SIZE];       // Mảng để lưu lịch sử các câu lệnh
 char *args[MAX_LINE / 2 + 1]; // Mảng để lưu trữ lệnh và các tham số của lệnh
 int historyCount = 0;
 int argsCount;
-int childRunning = 0; // Biến cờ để xác định process con có đang chạy hay không
-pid_t pid = 1;
+pid_t pid = DEFAULT_PID;
 
 // Hàm để kill tiến trình con
 void sigint_handler()
 {
     if (pid == 0)
     {
-        printf("Ctrl + C pressed, quitting program...\n");
+        printf("Ctrl + C pressed, quitting program...\n"); // Nếu là tiến trình con, in ra dòng chữ này
     }
 }
 
