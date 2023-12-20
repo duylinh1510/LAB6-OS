@@ -62,7 +62,7 @@ void exec_cmd(char *command)
             output_fd = open(args[j + 1], O_WRONLY | O_CREAT | O_TRUNC, 0644); // output_fd lưu trữ giá trị file descriptor nên phía trên mới khai báo int
             if (output_fd < 0)
             {
-                perror("System fail to execuse.");
+                perror("System fail to execute.");
                 exit(EXIT_FAILURE); // Không mở được file nên báo lỗi rồi thoát
             }
             dup2(output_fd, STDOUT_FILENO); // Overwrite file STDOUT hiện tại bằng file output_fd vừa tạo, luồng đầu ra bây giờ là file output_fd
