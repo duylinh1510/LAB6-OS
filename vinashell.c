@@ -23,9 +23,14 @@ pid_t pid;
 void sigint_handler()
 {
     if (pid != 0 && childRunning == 1)
+    {
         kill(pid, SIGKILL);
+        printf("Ctrl + C pressed, stopping command...");
+    }
     else
+    {
         return;
+    }
 }
 
 void exec_cmd(char *command)
