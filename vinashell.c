@@ -17,19 +17,14 @@ char *args[MAX_LINE / 2 + 1]; // Mảng để lưu trữ lệnh và các tham s�
 int historyCount = 0;
 int argsCount;
 int childRunning = 0; // Biến cờ để xác định process con có đang chạy hay không
-pid_t pid;
+pid_t pid = 1;
 
 // Hàm để kill tiến trình con
 void sigint_handler()
 {
-    if (pid != 0 && childRunning == 1)
+    if (pid == 0)
     {
-        printf("Ctrl + C pressed, stopping command...");
-        kill(pid, SIGKILL);
-    }
-    else
-    {
-        return;
+        printf("Ctrl + C pressed, quitting program...\n");
     }
 }
 
@@ -177,15 +172,8 @@ int main()
         // Tiến trình con
         if (pid == 0)
         {
-            childRunning = 1;
-            char *cmd_list[MAX_COMMAND]; // Mảng để chứa các câu lệnh phân tách bằng dấu '|'. Ví dụ ["wc- l", "ls", "cat output.txt"]
+            char cmd_list[MAX_COMMAND][MAX_LINE]; // Mảng để chứa các câu lệnh phân tách bằng dấu '|'. Ví dụ ["wc- l", "ls", "cat output.txt"]
             int cmd_count = 0;
-
-            // Cấp phát bộ nhớ
-            for (int i = 0; i < MAX_COMMAND; i++)
-            {
-                cmd_list[i] = malloc(MAX_LINE);
-            }
 
             // Khúc này là để tách chuỗi command thành nhiều sub-command bằng dấu '|'
             char *token = strtok(command, "|");
@@ -246,11 +234,6 @@ int main()
                     waitpid(-1, NULL, 0); // Chờ tiến trình con hi sinh
                 }
             }
-
-            childRunning = 0;
-            for (int i = 0; i < MAX_COMMAND; i++) {
-                free(cmd_list[i]); // Free bộ nhớ
-            }
             exit(EXIT_SUCCESS);
         }
 
@@ -266,6 +249,6 @@ int main()
         free(HF[i]);
     for (int i = 0; i < argsCount; i++)
         free(args[i]);
-    printf("Goodbye!");
+    printf("Goodbye!\n");
     return 0;
 }
