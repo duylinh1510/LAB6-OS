@@ -151,7 +151,7 @@ int main()
         }
 
         // Lưu lịch sử lại câu lệnh vừa nhập (nếu không phải lệnh HF)
-        if (!hfUsed) 
+        else
         {
             if (historyCount < HISTORY_SIZE) // Nếu lịch sử còn chỗ trống
             {
