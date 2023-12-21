@@ -147,6 +147,7 @@ int main()
             while ((hfPtr = strstr(hfPtr + strlen("HF"), "HF")) != NULL && hfCount < historyCount) // Tiếp tục tìm kiếm xem còn chữ "HF" nào trong command không
                 hfCount++;
             strcpy(command, HF[historyCount - hfCount]); // Lấy câu lệnh từ history để gán vào câu lệnh hiện tại
+            printf("it007sh> %s\n", command);
         }
 
         // Lưu lịch sử lại câu lệnh vừa nhập (nếu không phải lệnh HF)
