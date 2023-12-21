@@ -9,7 +9,7 @@
 #include <string.h>
 
 #define HISTORY_SIZE 5
-#define MAX_LINE 80 // Số ký tự tối đa trên 1 dòng
+#define MAX_LINE 80   // Số ký tự tối đa trên 1 dòng
 #define MAX_COMMAND 4 // Số command tối đa được sử dụng trong pipe, ví dụ: 'ls | grep a | wc -l' là 3 command
 #define DEFAULT_PID 1 // id mặc định để gán cho process chính khi hàm fork() chưa được gọi
 
@@ -105,7 +105,7 @@ void exec_cmd(char *command)
 int main()
 {
     // Listener để xử lý khi người dùng nhấn Ctrl + C
-    signal(SIGINT, sigint_handler); 
+    signal(SIGINT, sigint_handler);
 
     // Cấp phát bộ nhớ
     for (int i = 0; i < HISTORY_SIZE; i++)
@@ -116,7 +116,6 @@ int main()
     {
         args[i] = malloc(MAX_LINE);
     }
-
 
     int should_run = 1; // Biến cờ để xác định chương trình có tiếp tục chạy hay không
     while (should_run)
@@ -131,40 +130,46 @@ int main()
         // Bỏ qua nếu câu lệnh rỗng
         if (strlen(command) == 0)
             continue;
+
         // Kiểm tra lệnh đặc biệt của người dùng nhập vào như "exit"
-        else if (strcmp(command, "exit") == 0)
+        if (strcmp(command, "exit") == 0)
         {
             should_run = 0;
             continue;
         }
-        // Nếu lệnh là "HF"
-        else if (strcmp(command, "HF") == 0)
+
+        // Kiểm tra lệnh đặc biệt HF
+        char *hfPtr = strstr(command, "HF"); // Trả về con trỏ đến vị trí đầu tiên của chuỗi "HF" trong chuỗi lớn "command"
+        int hfUsed = hfPtr == NULL ? 0 : 1; // Biến cờ để xác định người dùng đã nhập lệnh HF
+        if (hfUsed)
         {
-            // In ra 5 lệnh gần nhất
-            for (int i = 0; i < historyCount; i++)
-            {
-                printf("%s\n", HF[i]);
-            }
-            continue;
+            int hfCount = 1;
+            while ((hfPtr = strstr(hfPtr + strlen("HF"), "HF")) != NULL && hfCount < historyCount) // Tiếp tục tìm kiếm xem còn chữ "HF" nào trong command không
+                hfCount++;
+            strcpy(command, HF[historyCount - hfCount]); // Lấy câu lệnh từ history để gán vào câu lệnh hiện tại
         }
 
-        // Lưu lịch sử lại câu lệnh vừa nhập
-        if (historyCount < HISTORY_SIZE)
+        // Lưu lịch sử lại câu lệnh vừa nhập (nếu không phải lệnh HF)
+        if (!hfUsed) 
         {
-            strcpy(HF[historyCount], command);
-            historyCount++;
-        }
-        // Nếu lịch sử đã đầy
-        else
-        {
-            // Xóa lệnh đầu tiên và dịch chuyển các lệnh cũ lên trên
-            for (int i = 0; i < HISTORY_SIZE - 1; i++)
+            if (historyCount < HISTORY_SIZE) // Nếu lịch sử còn chỗ trống
             {
-                strcpy(HF[i], HF[i + 1]);
+                strcpy(HF[historyCount], command);
+                historyCount++;
             }
-            strcpy(HF[HISTORY_SIZE - 1], command); // Lưu lệnh mới nhất vào cuối
+            else // Nếu lịch sử đã đầy
+            {
+                // Xóa lệnh đầu tiên và dịch chuyển các lệnh cũ lên trên
+                for (int i = 0; i < HISTORY_SIZE - 1; i++)
+                {
+                    strcpy(HF[i], HF[i + 1]);
+                }
+
+                strcpy(HF[HISTORY_SIZE - 1], command); // Lưu lệnh mới nhất vào cuối
+            }
         }
 
+        // Đẻ ra tiến trình con để giao nhiệm vụ thực thi lệnh cho nó
         pid = fork();
         if (pid == -1)
         {
@@ -196,7 +201,7 @@ int main()
                 }
 
                 strcpy(cmd_list[cmd_count++], token); // lưu subcommand vào câu lệnh cmd_list
-                token = strtok(NULL, "|");     // tìm subcommand tiếp theo
+                token = strtok(NULL, "|");            // tìm subcommand tiếp theo
             }
 
             // Khúc này là để chạy từng sub-command. Nếu có nhiều hơn 1 sub-command thì cơ chế pipe sẽ có hiệu lực
